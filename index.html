@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="EUV PF Alignment Documentation Tool">
+<title>EUV收集镜PF点对准装调方案 · 版本① (±1 mm/±1 mrad)</title>
+<style>
+  body { font-family: '微软雅黑', '宋体', SimSun, sans-serif; font-size: 11pt; line-height: 1.8; color: #000; max-width: 210mm; margin: auto; padding: 20px; }
+  h1 { font-size: 18pt; font-weight: bold; text-align: center; margin: 24pt 0 12pt 0; page-break-before: always; }
+  h2 { font-size: 14pt; font-weight: bold; margin: 18pt 0 10pt 0; border-bottom: 2px solid #333; padding-bottom: 4pt; }
+  h3 { font-size: 12pt; font-weight: bold; margin: 14pt 0 8pt 0; }
+  h4 { font-size: 11pt; font-weight: bold; margin: 10pt 0 6pt 0; }
+  p { margin: 6pt 0; text-align: justify; }
+  table { border-collapse: collapse; width: 100%; margin: 10pt 0; font-size: 10pt; }
+  th, td { border: 1px solid #000; padding: 4pt 6pt; vertical-align: top; }
+  th { background-color: #ddd; font-weight: bold; text-align: center; }
+  ul, ol { margin: 6pt 0 6pt 24pt; }
+  li { margin: 3pt 0; }
+  .note { background-color: #f5f5f5; border-left: 4px solid #666; padding: 8pt 12pt; margin: 10pt 0; }
+  .spec-table th:first-child { width: 22%; }
+  .task-table th:nth-child(1) { width: 5%; }
+  .task-table th:nth-child(2) { width: 8%; }
+  .task-table th:nth-child(3) { width: 12%; }
+  .task-table th:nth-child(4) { width: 42%; }
+  .task-table th:nth-child(5) { width: 12%; }
+  .task-table th:nth-child(6) { width: 8%; }
+  .task-table th:nth-child(7) { width: 6%; }
+  .task-table th:nth-child(8) { width: 7%; }
+  .highlight { font-weight: bold; }
+  .formula { font-family: 'Cambria Math', 'Times New Roman', serif; font-style: italic; background: #f0f0f0; padding: 2pt 6pt; }
+</style>
+</head>
+<body>
+
+<!-- ===== 方案部分 ===== -->
+<h1>EUV光源多层钼硅膜收集镜与腔体PF点对准装调方案</h1>
+<p style="text-align:center;font-weight:bold;">基于PSM、定心球面镜、PF靶球及平行双V槽+销钉定位的可见光装调工艺</p>
+<p style="text-align:center;">文档密级：内部 · 版本：V1.0 · 精度版本①：位置 ≤ ±1 mm，姿态 ≤ ±1 mrad · 日期：2026-05-26</p>
+
+<h2>1. 方案总述与目标</h2>
+<p>本方案的最终对准目标是使收集镜（CL）的光学PF点与光源腔体的真实PF点重合，并精确获取该PF点的空间坐标，为后续锡滴打靶实验提供关键输入。光源腔体在整个过程中完全固定，收集镜通过两个平行V槽加一个销钉实现高精度定位安装。</p>
+<p>核心装调逻辑：①将定心球面镜通过转接工装安装于收集镜接口（平行双V槽+销钉），利用PSM共焦标定腔体IF点，锁定PSM后拆除球面镜及工装；②收集镜以相同方式安装于同一V槽接口，其PF点与腔体设计PF点基本重合（偏差由V槽定位精度及离线标定保证）；③将PF靶球移入光路，基于IF→PF共轭关系，调节靶球位置使自准直光斑达到预设的参考直径D_ref并居中，此时靶球球心与收集镜PF点精确重合，即标记了腔体真实PF点，锁定靶球并记录空间坐标；④锁紧收集镜并复测。整个过程以光斑图像为唯一判据，不依赖位移台读数或设计值计算。</p>
+
+<h2>2. PF点定位判据的重要说明</h2>
+<p>已知PF靶球直径约10~15 mm，曲率半径R_ball≈5~7.5 mm，而PF-IF之间的机械设计距离为1886.927 mm。此距离远大于靶球曲率半径（约三个数量级）。在此条件下，靶球表面反射的光斑形态受到球面曲率的强烈影响，近轴近似公式 D≈2·NA·d 不再成立。当靶球球心沿轴向移动时，返回光斑直径的变化并非简单的线性关系，且最小光斑位置并不对应靶球球心在PF点。因此，不能通过寻找最小光斑来定位PF点。必须通过离线灵敏度标定，实测该特定靶球在设计距离d_design下的光斑参考直径D_ref，作为阶段二的定量判据。</p>
+
+<h2>3. 关键器件定义与功能</h2>
+<table>
+<tr><th>器件名称</th><th>核心功能</th><th>安装约束与工作条件</th></tr>
+<tr><td>PSM（点光源显微仪）</td><td>提供高精度点光源并接收反射光斑，建立空间基准光轴。</td><td>固定于稳定基座，全程位置不变。物方NA根据精度需求，工作距离由机械几何确定。内置调焦及精密平移台。</td></tr>
+<tr><td>PSM调节机构（三维平移台+角位移台）</td><td>用于粗调和精调PSM的姿态与位置，使其聚焦点对准IF点并锁定。</td><td>安装于PSM固定工装与基座之间。需具备X/Y/Z平移（≥±10 mm）及俯仰/偏摆调节（≥±5°），分辨率≤10 μm/0.01°，锁紧后漂移≤2 μm/0.002°。</td></tr>
+<tr><td>PF靶球精密三维位移台</td><td>支撑并精确移动PF靶球至腔体PF点，提供亚微米级定位。</td><td>负载≥100 g，行程≥±5 mm，分辨率≤1 μm，重复定位精度≤0.5 μm，三轴正交偏差≤10″，带机械锁紧机构。</td></tr>
+<tr><td>定心球面镜</td><td>安装于收集镜接口（通过转接工装），其球心与腔体理论IF点重合。阶段一共焦标定腔体真实IF点后拆除。</td><td>凹球面反射镜。曲率半径R由接口几何和IF点位置直接决定，口径Ds由R和PSM物方NA决定。球面度≤λ/10，镀635 nm高反膜。</td></tr>
+<tr><td>PF高反射靶球</td><td>作为腔体PF点的物理标记。通过自准直共焦法结合D_ref判据定位。</td><td>凸球面，直径10~15 mm（典型12 mm），球度≤0.5 μm，表面粗糙度Ra≤5 nm，反射率≥85%。安装杆直径≥3 mm，因瓦合金，直线度≤2 μm。</td></tr>
+<tr><td>激光器</td><td>为PSM提供照明光源。</td><td>波长635 nm，功率≥5 mW（光纤耦合输出），功率稳定性≤1% RMS，光谱宽度≤2 nm，单模，FC/PC或SMA905接口。</td></tr>
+<tr><td>PF成像光纤</td><td>将PSM像面的光斑图像中继至相机，同时导入激光。</td><td>多模阶跃折射率光纤，纤芯≤10 μm，NA需≥PSM物方NA，长度1.5 m，SMA905转C-Mount接口，损耗≤0.5 dB/m。</td></tr>
+<tr><td>可见光相机</td><td>接收光斑图像，为共焦调节提供视觉反馈。</td><td>单色CMOS/CCD，像素≤3.45 μm，≥500万像素，动态范围≥60 dB，C-Mount接口，帧率≥15 fps。</td></tr>
+<tr><td>收集镜（CL）</td><td>多层钼硅膜反射镜，通过平行双V槽+销钉定位安装，其PF点已通过离线标定与机械基准关联。</td><td>曲率半径等光学参数已确定，PF点相对于定位基准的矢量已精密标定（精度≤±2 μm）。</td></tr>
+<tr><td>平行双V槽+销钉机构</td><td>用于精确定位CL及转接工装。</td><td>V槽平面度≤0.002 mm，平行度≤0.003 mm，销钉孔配合H7/g6，重复定位精度≤±5 μm。</td></tr>
+</table>
+
+<h2>4. 激光器波长选择</h2>
+<p><span class="highlight">为什么优选635 nm：</span></p>
+<ol>
+<li><span class="highlight">人眼视觉灵敏度：</span>人眼光谱光视效率函数（明视觉）峰值约为555 nm（绿色）。在红光波段，635 nm的人眼相对灵敏度约为650 nm的2~3倍，约为670 nm的5倍以上。因此在同等辐射功率下，635 nm激光比650/660 nm激光在人眼中亮度高约2~3倍，更易于装调过程中肉眼观察和判断光斑形态。在PSM装调过程中，操作人员需要直接观察光斑进行初步对准，635 nm提供更好的可见性。</li>
+<li><span class="highlight">可见光对准兼容性：</span>EUV工作波长为13.5 nm，无法直接用于可见光装调。可见光装调必须在EUV波段之外的可见光波段进行。635 nm处于可见光红-橙区域（人眼敏感区），是精密光学装调领域广泛采用的基准波长之一。</li>
+<li><span class="highlight">膜系匹配性：</span>定心球面镜和PF靶球均需镀制高反射膜。635 nm波段的介质高反膜工艺成熟，反射率可达90%以上（如TiO₂/SiO₂或Ta₂O₅/SiO₂多层膜系），成本低、可靠性高。</li>
+<li><span class="highlight">激光器可获得性：</span>635 nm半导体激光器技术成熟，单模光纤耦合输出功率≥5 mW的模块供应充足，功率稳定性（≤1% RMS）和光谱宽度（FWHM≤2 nm）指标均可在货架产品中获得。</li>
+<li><span class="highlight">其他可见光波长的可行性分析：</span>
+<table>
+<tr><th>候选波长</th><th>优势</th><th>劣势</th><th>是否可选</th></tr>
+<tr><td>532 nm（绿光）</td><td>人眼最敏感，亮度最高；适合肉眼观察</td><td>DPSS激光器体积大、功耗高；光纤耦合效率低；膜系需重新设计；相干长度长，易产生散斑干扰光斑质心提取</td><td>可选但不推荐（散斑干扰是主要顾虑）</td></tr>
+<tr><td>650/660 nm（深红）</td><td>成本低，供应最广泛</td><td>人眼灵敏度仅为635 nm的1/3~1/2；肉眼观察光斑困难；装调效率降低</td><td>可选但非优选（装调体验差）</td></tr>
+<tr><td>405 nm（紫光）</td><td>短波长，衍射极限光斑更小</td><td>人眼灵敏度极低（接近可见光边界）；膜系需专门设计；长期暴露有光化学风险</td><td>不可选（安全性及可见性不足）</td></tr>
+<tr><td>780/850 nm（近红外）</td><td>激光器成本低</td><td>不可见，无法肉眼观察；需IR相机或转换卡；装调极不方便</td><td>不可选</td></tr>
+</table>
+</li>
+<li><span class="highlight">结论：</span>综合人眼灵敏度、膜系成熟度、器件可获得性及装调操作便利性，优选635 nm。其他可见光波长在特定条件下可用，但均存在显著劣势。532 nm的散斑问题在微米级光斑质心定位中尤为突出——散斑对比度高会导致质心提取抖动增大（可达0.2~0.5像素），直接降低定位精度，而635 nm半导体激光器的相干长度较短，散斑对比度显著低于DPSS绿光激光器。因此，635 nm是最优选择。</li>
+</ol>
+
+<h2>5. 总体装调阶段划分</h2>
+<ul>
+<li><span class="highlight">阶段一：标定光源腔体IF点。</span>定心球面镜转接工装安装于V槽接口，PSM通过调节机构共焦标定真实IF点并锁定，拆除工装。</li>
+<li><span class="highlight">阶段二：收集镜安装与靶球定位腔体PF点。</span>CL通过同一V槽接口安装就位，移入PF靶球，通过三维位移台调节靶球使自准直光斑达到D_ref且居中，锁定靶球并记录坐标。</li>
+<li><span class="highlight">阶段三：锁紧复测与精度验证。</span>锁紧收集镜，复测光斑稳定性，验证对准精度。</li>
+</ul>
+
+<h2>6. 定心球面镜球心与IF点重合的机械保证</h2>
+<p>定心球面镜通过转接工装安装于收集镜接口（平行双V槽+销钉），其球心与腔体理论IF点的重合由以下机械设计保证：</p>
+<ul>
+<li><span class="highlight">接口基准统一：</span>转接工装的底部定位面（V槽配合面和销钉孔）与收集镜完全相同，利用同一套V槽和销钉定位，确保重复拆装后空间位置一致。</li>
+<li><span class="highlight">工装精度设计：</span>工装采用因瓦合金制造，关键尺寸公差控制在±0.005 mm以内。球面镜安装座的位置相对于工装底部基准面经精密标定，其理论位置由IF点坐标和接口基准面坐标计算得出。</li>
+<li><span class="highlight">首次校准与锁死：</span>工装上设有微调机构（差分顶丝或楔形垫片），首次安装时利用PSM共焦信号进行在线校准，使球心精确位于IF点，然后锁死微调机构并注入固定胶。此后工装成为"IF点参考件"，重复拆装不再需要重新校准。</li>
+<li><span class="highlight">热稳定性：</span>因瓦合金的热膨胀系数极低（≤1.5×10⁻⁶/K），在装调环境温度（22±0.5℃）下，工装热变形引起的球心漂移可忽略不计。</li>
+</ul>
+<p>通过以上措施，定心球面镜球心与腔体IF点的最终偏差可控制在≤±30 μm以内，满足IF点标定误差预算要求。</p>
+
+<h2>7. CL与Vessel六自由度偏差计算方法</h2>
+<p>CL（收集镜）相对于vessel（光源腔体）在X/Y/Z、Rx/Ry/Rz六个自由度的偏差，通过以下方法计算：</p>
+<h3>7.1 坐标系统定义</h3>
+<ul>
+<li>以腔体V槽和销钉接口为基准，建立<span class="highlight">腔体坐标系 {V}</span>：原点位于销钉孔中心，X轴沿两V槽对称中心线，Y轴垂直于V槽底面向上，Z轴按右手定则确定。</li>
+<li><span class="highlight">CL坐标系 {C}</span>：以CL的PF点为原点，定位基准面（V槽配合面和销钉孔）为参考。</li>
+</ul>
+<h3>7.2 平动偏差（X/Y/Z）计算</h3>
+<p><span class="highlight">方法一——离线标定法（主方法）：</span>CL在其独立坐标系{C}中的PF点坐标通过离线干涉测量或坐标测量机（CMM）精密标定，精度≤±2 μm。CL安装于V槽后，CL坐标系{C}相对于腔体坐标系{V}的理论变换矩阵 T_C^V（6自由度）由机械设计给出。实际安装后，PF点在{V}中的坐标为：</p>
+<p class="formula">P_PF^V = T_C^V · P_PF^C</p>
+<p>平动偏差 ΔX, ΔY, ΔZ 为实际测量值与设计值的差值。其中ΔX, ΔY通过阶段二靶球定位时的光斑质心偏移量反算；ΔZ通过D_ref标定曲线上的光斑直径偏离量反算。</p>
+<p><span class="highlight">方法二——CMM直接测量法（验证法）：</span>在CL安装于V槽后，使用CMM直接测量CL外缘基准面或标记点相对于腔体基准的位置，通过坐标变换解算六自由度偏差。精度取决于CMM精度（典型≤±2 μm + L/300 mm）。</p>
+<h3>7.3 角度偏差（Rx/Ry/Rz）计算</h3>
+<ul>
+<li><span class="highlight">Rx, Ry（俯仰/偏摆）：</span>
+<ul>
+<li><span class="highlight">方法A——光斑质心偏移法：</span>PSM的聚焦点位于IF点。当CL安装后，其PF点位置变化会改变返回光路。靶球置于理论PF点时，若Rx或Ry存在偏差，靶球球心将在横向上偏离光轴，导致返回光斑质心偏移。在小角度近似下，横向偏移量 Δx ≈ f_CL · tan(Ry) ≈ f_CL · Ry（Ry为小量）。由光斑质心偏移量和CL焦距f_CL，可解算Rx和Ry。</li>
+<li><span class="highlight">方法B——自准直仪法：</span>在CL背面或侧面粘贴小平面反射镜（基准面已知），使用电子自准直仪测量其法线方向，与腔体基准方向比较，直接获得Rx、Ry偏差。精度可达0.1″。</li>
+</ul>
+</li>
+<li><span class="highlight">Rz（绕Z轴旋转）：</span>
+<ul>
+<li><span class="highlight">方法C——销钉定位间隙法：</span>Rz由销钉与孔的配合间隙决定。H7/g6配合的最大间隙 = 孔上偏差(H7) – 轴下偏差(g6)。例如孔径φ6 H7(+0.012/0)，销钉φ6 g6(-0.004/-0.012)，最大间隙 = 0.012 – (-0.012) = 0.024 mm。若销钉到V槽对称中心的距离为L_pin，则Rz_max = arctan(间隙/L_pin)。典型L_pin≈100 mm时，Rz_max≈0.24 mrad。实测Rz可通过CMM或激光跟踪仪测量CL侧面基准点获得。</li>
+</ul>
+</li>
+</ul>
+<h3>7.4 综合偏差求解流程</h3>
+<ol>
+<li>CL离线标定：记录CL坐标系{C}中PF点坐标及定位基准面参数。</li>
+<li>CL安装于V槽。</li>
+<li>利用PSM+靶球系统（阶段二流程），获取靶球位于PF点时的光斑质心(X, Y)和直径D。</li>
+<li>由光斑质心偏移反算ΔX, ΔY；由D与D_ref的偏差反算ΔZ。</li>
+<li>由ΔX, ΔY结合CL焦距f_CL解算Rx, Ry（或采用自准直仪直接测量）。</li>
+<li>通过CMM或销钉间隙分析法确定Rz。</li>
+<li>输出六自由度偏差向量 [ΔX, ΔY, ΔZ, Rx, Ry, Rz]，作为锡滴打靶补偿输入。</li>
+</ol>
+<div class="note"><span class="highlight">注意：</span>本偏差计算方法已整合到阶段三"锁紧复测与精度验证"流程中，作为对准精度验证的核心环节。六自由度偏差数据同时为后续锡滴打靶实验的空间坐标补偿提供关键输入。</div>
+
+<h2>8. 详细操作SOP</h2>
+<h3>8.1 阶段一：标定光源腔体IF点</h3>
+<ol>
+<li>安装定心球面镜转接工装：工装底部具有与CL完全相同的平行双V槽配合面和销钉孔，以相同方式落座于腔体V槽上，销钉插入孔中定位，按规定力矩锁紧。</li>
+<li>架设PSM及调节机构：将PSM安装于三维平移+角位移组合台上，再将组合台固定于腔体外侧稳定基座。初步调节平移和角度，使PSM大致对准球面镜。</li>
+<li>粗调PSM位置与姿态：打开激光器，通过相机观察反射光斑。调节PSM的三维平移和角度，使光斑进入相机视场并大致居中。</li>
+<li>精调至共焦状态：精细调节PSM的轴向位置（调焦），使光斑达到最小（艾里斑形态），此时PSM聚焦点与球面镜球心（即IF点）精确共轭。确认光斑质心位于视场中心。</li>
+<li>锁定PSM并记录：锁紧PSM调节机构的所有自由度，再次确认光斑状态不变。记录相机图像作为基准。此时PSM位置即为腔体真实IF点的光学基准。</li>
+<li>拆除定心球面镜转接工装：小心拆下转接工装，不触碰PSM及调节机构。</li>
+</ol>
+<h3>8.2 阶段二：收集镜安装与靶球定位腔体PF点</h3>
+<ol>
+<li>安装收集镜：将CL以相同方式安装于同一V槽接口，销钉定位，按规定力矩锁紧。</li>
+<li>安装PF靶球及位移台：将靶球通过安装杆固定于三维位移台上，位移台安装于腔体外部独立支架。初步调节靶球位置至理论PF点附近。</li>
+<li>寻找初始参考点：将靶球移动至PSM聚焦点（IF点）附近，使光斑达到极小状态，记录位移台读数Z0。</li>
+<li>扫描测量：以Z0为起点，将靶球向远离PSM方向逐点移动，覆盖设计d_design前后的范围（d_design=1886.927 mm，扫描范围1881~1892 mm），步长50 μm。在每个位置记录位移台读数Δz = Zi – Z0，并同步采集相机中的光斑图像。</li>
+<li>提取光斑直径：对每帧图像使用高斯拟合算法提取光斑的半高全宽（FWHM）直径D。</li>
+<li>绘制D-Δz曲线：以Δz为横坐标，D为纵坐标，拟合多项式曲线D = f(Δz)。</li>
+<li>确定D_ref：在曲线上查出Δz = d_design对应的光斑直径D_ref。</li>
+<li>验证灵敏度：在Δz = d_design处求导，得到实际灵敏度S_meas = dD/d(Δz)。</li>
+</ol>
+<h3>8.3 阶段三：锁紧复测与精度验证</h3>
+<ul>
+<li><span class="highlight">基准记录：</span>阶段二锁定靶球时，记录光斑质心(X₀, Y₀)、直径D₀和靶球位移台坐标。</li>
+<li><span class="highlight">锁紧偏差：</span>锁紧CL后复测光斑质心，计算偏移Δr，换算物方PF点偏差δ = Δr/M。</li>
+<li><span class="highlight">六自由度偏差计算：</span>按照第7节所述方法，计算CL相对于vessel的六自由度偏差[ΔX, ΔY, ΔZ, Rx, Ry, Rz]。</li>
+<li><span class="highlight">长期稳定性：</span>24小时内每4小时记录一次光斑质心，漂移量应≤2 μm。</li>
+<li><span class="highlight">坐标重复性：</span>解锁靶球位移台并重新调节至D_ref共焦状态，重复3次，坐标偏差≤2 μm。</li>
+</ul>
+
+<h2>9. 参数确定逻辑</h2>
+<table>
+<tr><th>步骤</th><th>参数</th><th>确定方法</th></tr>
+<tr><td>①</td><td>IF点空间坐标</td><td>由腔体光学设计确定，或通过机械测量标定。</td></tr>
+<tr><td>②</td><td>定心球面镜曲率半径R</td><td>球面镜球心必须与IF点重合。球面镜表面位置由接口基准面+转接工装厚度决定。因此R = IF点到球面镜表面的轴向距离，由机械几何直接计算得出。</td></tr>
+<tr><td>③</td><td>PSM所需工作距离WD_req</td><td>设定球面镜表面到PSM物镜前端的安全间隙d_safe（≥20 mm）。WD_req = R + d_safe。此值作为PSM选型的硬约束。</td></tr>
+<tr><td>④</td><td>PSM物方NA</td><td>根据靶球轴向定位灵敏度需求（δz）、相机像素尺寸和放大率M，通过S_min = ΔD_obj/δz及NA_min≈S_min/2计算得出。</td></tr>
+<tr><td>⑤</td><td>定心球面镜口径Ds</td><td>由R和NA决定：D_beam = 2×R×NA，Ds = 1.1×D_beam。</td></tr>
+<tr><td>⑥</td><td>PSM焦距f</td><td>f≈M×WD_req。</td></tr>
+<tr><td>⑦</td><td>PSM调节机构指标</td><td>行程覆盖机械偏差+调节余量；分辨率满足共焦精细调节需求；锁紧稳定性满足长期不漂移要求。</td></tr>
+<tr><td>⑧</td><td>靶球位移台指标</td><td>行程覆盖安装偏差+调节范围；分辨率≤灵敏度/10；锁紧漂移远小于定位误差预算。</td></tr>
+</table>
+
+<h2>10. 对准精度测量方案</h2>
+<ul>
+<li><span class="highlight">基准记录：</span>阶段二锁定靶球时，记录光斑质心(X₀,Y₀)、直径D₀和靶球位移台坐标。</li>
+<li><span class="highlight">锁紧偏差：</span>锁紧CL后复测光斑质心，计算偏移Δr，换算物方PF点偏差δ = Δr/M。</li>
+<li><span class="highlight">六自由度偏差：</span>按第7节方法计算CL相对于vessel的[ΔX, ΔY, ΔZ, Rx, Ry, Rz]。</li>
+<li><span class="highlight">长期稳定性：</span>24小时内每4小时记录一次光斑质心，漂移量应≤2 μm。</li>
+<li><span class="highlight">坐标重复性：</span>解锁靶球位移台并重新调节至D_ref共焦状态，重复3次，坐标偏差≤2 μm。</li>
+</ul>
+
+<h2>11. 工装设计与固定方式</h2>
+<table>
+<tr><th>工装名称</th><th>安装位置</th><th>固定方式与材料建议</th></tr>
+<tr><td>PSM固定工装</td><td>腔体外侧稳定基座</td><td>钢制底座，膨胀螺栓或压板固定，连接面平面度≤0.01 mm。上部安装PSM调节机构。</td></tr>
+<tr><td>PSM调节机构</td><td>PSM固定工装与PSM之间</td><td>三维平移+角位移组合台，螺栓连接。锁紧后稳定性达标。</td></tr>
+<tr><td>定心球面镜转接工装</td><td>腔体平行双V槽+销钉接口</td><td>因瓦合金，底部与CL完全相同，上部安装球面镜。重复拆装误差≤5 μm。</td></tr>
+<tr><td>PF靶球三维位移台</td><td>腔体外部独立支架</td><td>螺栓固定，三轴正交偏差≤10″，带机械锁紧。</td></tr>
+<tr><td>PF靶球支架</td><td>腔体外部独立基座</td><td>刚性支架，与位移台底部接口匹配，刚度≥10 N/μm。</td></tr>
+</table>
+
+<!-- ===== 任务清单部分 ===== -->
+<h1>任务清单（版本①：±1 mm/±1 mrad，靶球Φ10-15 mm）</h1>
+<p>周期：60天完成全部采购下单</p>
+
+<table class="task-table">
+<tr><th>序</th><th>类别</th><th>任务</th><th>执行动作与参数确定方法（含详细计算逻辑与光学约束）</th><th>输入/输出</th><th>耦合</th><th>负责</th><th>天</th></tr>
+
+<tr><td>1</td><td colspan="7" style="font-weight:bold;background:#eee;">1. 系统精度分解</td></tr>
+<tr>
+<td>1.1</td><td>系统</td><td>误差预算与靶球灵敏度确定</td>
+<td>
+<span class="highlight">【误差源识别】</span><br>
+① 平行双V槽+销钉重复定位误差 e₁ = ±15 μm<br>
+<span class="highlight">确定依据：</span>V槽平面度≤0.002 mm，平行度≤0.003 mm，销钉孔配合H7/g6。V槽接触定位的重复性主要受接触面微观不平度和配合间隙影响。H7/g6配合的径向间隙典型值为0.005~0.024 mm（以φ6 mm销钉为例），在线接触V槽定位的约束下，实际重复定位误差远小于配合间隙，经验值取±15 μm。<br>
+<br>
+② CL离线标定误差 e₂ = ±10 μm<br>
+<span class="highlight">确定依据：</span>CL的PF点相对于定位基准面的矢量通过CMM或激光干涉仪离线标定。现代CMM测量不确定度可达±(1.0 + L/350) μm，在典型测量范围L≤200 mm时约为±1.6 μm。考虑温度波动（22±0.5℃）、夹具应力释放等因素，保守取±10 μm。<br>
+<br>
+③ PSM标定IF点误差 e₃ = ±20 μm<br>
+<span class="highlight">确定依据：</span>包含PSM调焦分辨率(1 μm)、共焦判别不确定性(约5 μm)、球面镜球面度误差(λ/10≈63.5 nm→可忽略)以及环境扰动(振动、气流)。综合经验值取±20 μm。<br>
+<br>
+④ 环境漂移误差 e₅ = ±20 μm<br>
+<span class="highlight">确定依据：</span>24小时内温度波动±0.5℃引起的热膨胀（钢：α≈11.5×10⁻⁶/K，光程约2 m→ΔL≈23 μm；因瓦合金：α≤1.5×10⁻⁶/K→ΔL≈3 μm）。考虑气流扰动和振动，综合取±20 μm。<br>
+<br>
+<span class="highlight">【误差合成与灵敏度反算】</span><br>
+总允许误差：E_total = 1000 μm（设计要求）<br>
+RSS合成公式：E_total² = e₁² + e₂² + e₃² + e₄² + e₅²<br>
+即：1000² = 15² + 10² + 20² + e₄² + 20²<br>
+计算：e₄² = 1,000,000 – 225 – 100 – 400 – 400 = 998,875<br>
+∴ e₄ = √998,875 ≈ 999 μm<br>
+<span class="highlight">光学约束：</span>e₄为靶球实时定位允许误差。为保留工程裕度，保守分配 e₄ = ±800 μm。<br>
+靶球最小可分辨位移（灵敏度）：δz = δxy = e₄/5 = 800/5 = 160 μm。<br>
+<span class="highlight">(1/5因子说明：</span>Nyquist采样准则要求定位分辨率至少为允许误差的1/2；考虑噪声和非线性，采用1/5提供充足的定位裕度。)
+</td>
+<td>输入：总精度1000 μm<br>输出：误差预算，δ=160 μm</td><td>先决</td><td>系统/光学</td><td>1</td>
+</tr>
+
+<tr><td>2</td><td colspan="7" style="font-weight:bold;background:#eee;">2. 机械几何参数确定</td></tr>
+<tr>
+<td>2.1</td><td>机械</td><td>确认IF点与接口位置</td>
+<td>从机械设计图纸获取IF点空间坐标及V槽接口基准面坐标。IF点坐标是后续所有几何计算的基准原点。<br>
+<span class="highlight">光学约束：</span>IF点坐标误差直接影响R的计算精度。要求机械图纸标注精度≤±0.1 mm。</td>
+<td>输入：机械图纸<br>输出：IF点坐标，接口基准面坐标</td><td>独立</td><td>机械/光学</td><td>1</td>
+</tr>
+<tr>
+<td>2.2</td><td>机械</td><td>确定定心球面镜曲率半径R</td>
+<td>
+R = IF点到球面镜表面的轴向距离。<br>
+计算：由IF点坐标和球面镜安装面（转接工装顶面）坐标计算差值。<br>
+本版本示例：IF点距V槽基准面轴向距离为100 mm，转接工装厚度为20 mm，故 R = 100 – 20 = 80 mm。<br>
+<span class="highlight">光学约束：</span>①球面镜球心必须与IF点重合，这是阶段一标定的前提；②R决定了后续WD_req的下限；③R的公差需控制在≤±0.1%以内（即±0.08 mm），以保证IF点标定误差≤±20 μm。</td>
+<td>输入：IF点坐标，接口坐标<br>输出：R=80 mm</td><td>依赖2.1</td><td>机械/光学</td><td>0.5</td>
+</tr>
+<tr>
+<td>2.3</td><td>机械</td><td>确定PSM所需工作距离WD_req</td>
+<td>
+d_safe = 20 mm（安全间隙，避免PSM物镜与球面镜碰撞）。<br>
+WD_req = R + d_safe = 80 + 20 = 100 mm。<br>
+<span class="highlight">光学约束：</span>①d_safe≥20 mm为硬约束，考虑PSM物镜外径（典型20~30 mm）和操作安全空间；②WD_req为PSM选型的硬约束——PSM的工作距离必须≥WD_req，否则无法安装；③WD_req同时影响PSM的NA和焦距选择范围。</td>
+<td>输入：R=80 mm<br>输出：WD_req=100 mm</td><td>依赖2.2</td><td>机械/光学</td><td>0.5</td>
+</tr>
+
+<tr><td>3</td><td colspan="7" style="font-weight:bold;background:#eee;">3. 靶球兼容性确认与位移台需求</td></tr>
+<tr>
+<td>3.1</td><td>光学</td><td>靶球对收集镜会聚光锥的遮挡分析</td>
+<td>
+①根据CL光学设计，计算PF点处会聚光锥直径。若CL焦距f_CL=200 mm，F/#=10，则光锥在离焦±5 mm范围内的直径≈(离焦量)/10，PF点处光斑尺寸为衍射极限（<0.1 mm）。<br>
+②靶球直径10~15 mm，远大于光锥直径，因此靶球将完全截断会聚光束。这实际上提供了更好的反射效率，但需确保靶球球心位于PF点时，反射波前仍然有效——因为球面镜性质：只要入射球面波曲率中心与球心重合，反射就原路返回。靶球大小不影响自准直原理。<br>
+③PF-IF距离1886.927 mm，靶球曲率半径仅5~7.5 mm。最小光斑不对应PF点，必须采用D_ref法。<br>
+<span class="highlight">光学约束：</span>①靶球必须完全截获CL会聚光锥（直径≥光锥直径+安全裕度2 mm）；②靶球球度误差≤0.5 μm以保证反射波前共轭关系。</td>
+<td>输入：CL光学参数<br>输出：光路兼容性确认报告</td><td>独立</td><td>光学</td><td>0.5</td>
+</tr>
+<tr>
+<td>3.2</td><td>机械</td><td>确定靶球位移台需求</td>
+<td>
+靶球质量约7 g（不锈钢球Φ12 mm），安装杆≥3 mm，总质量约40 g，取3倍安全系数→负载≥100 g。<br>
+行程覆盖安装偏差±2 mm+调节范围±1 mm→≥±5 mm。<br>
+分辨率≤1 μm，重复定位精度≤0.5 μm，三轴正交偏差≤10″，带机械锁紧。<br>
+<span class="highlight">光学约束：</span>分辨率≤δz/10=16 μm为最低要求；为满足最严格精度版本的需求并统一规格，取≤1 μm。</td>
+<td>输出：位移台选型要求，安装杆图纸</td><td>依赖靶球尺寸</td><td>机械/光学</td><td>0.5</td>
+</tr>
+<tr>
+<td>3.3</td><td>机械</td><td>确定PSM调节机构需求</td>
+<td>
+平移行程≥±10 mm（覆盖机械偏差±5 mm并留余量），角度行程≥±5°（覆盖角度偏差±3°并留余量）。<br>
+平移分辨率≤10 μm，角度分辨率≤0.01°，锁紧漂移≤2 μm/0.002°。<br>
+<span class="highlight">光学约束：</span>平移分辨率需优于PSM调焦分辨率(1 μm)的10倍，即≤10 μm；角度分辨率需保证IF点处横向偏移≤4 μm→≤arctan(4 μm/100 mm)≈0.0023°，取≤0.01°。</td>
+<td>输出：调节机构选型要求</td><td>依赖PSM外形</td><td>机械/光学</td><td>0.5</td>
+</tr>
+
+<tr><td>4</td><td colspan="7" style="font-weight:bold;background:#eee;">4. 光学参数设计（δ=160 μm）</td></tr>
+<tr>
+<td>4.1</td><td>光学</td><td>确定PSM成像放大率M与相机像素</td>
+<td>
+相机像素=3.45 μm。要求横向位移δxy=160 μm时，像面移动≥2像素(6.9 μm)。<br>
+计算：M_min = 6.9/160 = 0.0431。<br>
+保留充足裕度，取 M = 0.1。<br>
+验证：物方位移160 μm→像面位移160×0.1=16 μm=4.64像素，满足≥2像素要求，余量充足。<br>
+<span class="highlight">光学约束：</span>①M由像面位移≥2像素的Nyquist采样条件确定；②M过大会减小视场（FOV=传感器尺寸/M），需确保FOV≥1 mm×1 mm以覆盖初始对准偏差；③M过小会降低灵敏度。</td>
+<td>输出：M=0.1，像素3.45 μm</td><td>独立</td><td>光学</td><td>0.5</td>
+</tr>
+<tr>
+<td>4.2</td><td>光学</td><td>确定PSM物方NA（基于轴向灵敏度）</td>
+<td>
+像面可辨光斑直径变化：ΔD_img = 6.9 μm（2像素）。<br>
+物方对应变化：ΔD_obj = ΔD_img/M = 6.9/0.1 = 69 μm。<br>
+所需光斑直径变化率（灵敏度）：S_min = ΔD_obj/δz = 69/160 = 0.431。<br>
+近轴近似公式：D≈2·NA·Δz，灵敏度S = dD/d(Δz) ≈ 2·NA。<br>
+因此 NA_min = S_min/2 = 0.431/2 ≈ 0.216。<br>
+<span class="highlight">非线性修正与安全系数：</span>靶球曲率半径仅5~7.5 mm，D-Δz关系非严格线性（实际灵敏度低于近轴近似值），增加30%安全系数→NA = 0.216×1.3 = 0.28。<br>
+考虑工作距离限制（WD=100 mm），高NA物镜在长工作距离下设计困难、成本高，最终取 <span class="highlight">NA = 0.25</span>，并计划通过离线标定获取实际D-Δz曲线来验证灵敏度是否满足要求。<br>
+<span class="highlight">光学约束：</span>①NA≥0.25由灵敏度需求导出；②NA的上限由工作距离(100 mm)约束——在100 mm工作距离下，NA=0.25对应入瞳直径≈50 mm，物镜设计可行；③若离线标定发现S_meas &lt; S_min(0.431)，则需提高NA或降低精度要求。</td>
+<td>输出：NA=0.25</td><td>依赖M，需与空间协调</td><td>光学</td><td>1</td>
+</tr>
+<tr>
+<td>4.3</td><td>光学</td><td>确定PSM工作距离WD与焦距f</td>
+<td>
+WD由WD_req确定：WD = 100 mm（满足WD_req=100 mm）。<br>
+焦距计算：f ≈ M × WD = 0.1 × 100 = 10 mm。<br>
+<span class="highlight">光学约束：</span>①WD≥WD_req(100 mm)为硬约束；②f由M和WD共同决定——M = f_tube/f_obj（有限共轭成像），在特定筒镜焦距下f_obj由所需M确定；③f过小（<8 mm）导致物镜设计困难、像差增大；f过大（>15 mm）导致系统过长。</td>
+<td>输出：WD=100 mm，f=10 mm</td><td>依赖M,空间</td><td>光学</td><td>0.5</td>
+</tr>
+<tr>
+<td>4.4</td><td>光学</td><td>计算定心球面镜曲率半径R</td>
+<td>
+安全间隙d_safe = 20 mm。<br>
+R = WD – d_safe = 100 – 20 = 80 mm。<br>
+<span class="highlight">光学约束：</span>①球面镜球心必须与IF点重合；②R公差≤±0.08 mm（0.1%）；③球面度≤λ/10以确保反射波前质量（λ=635 nm→PV≤63.5 nm）。</td>
+<td>输出：R=80 mm</td><td>依赖WD</td><td>光学</td><td>0.5</td>
+</tr>
+<tr>
+<td>4.5</td><td>光学</td><td>计算定心球面镜口径Ds</td>
+<td>
+光束直径：D_beam = 2 × R × NA = 2 × 80 × 0.25 = 40 mm。<br>
+口径（含10%装调裕度）：Ds = 1.1 × 40 = 44 mm→取标准值 <span class="highlight">45 mm</span>。<br>
+<span class="highlight">光学约束：</span>①Ds必须≥D_beam以确保截获全部照明光束；②10%装调裕度覆盖光束偏心和对准误差；③Ds过大增加工装尺寸和成本。</td>
+<td>输出：Ds=45 mm</td><td>依赖R,NA</td><td>光学</td><td>0.5</td>
+</tr>
+<tr>
+<td>4.6</td><td>光学</td><td>确定激光器波长</td>
+<td>
+优选635 nm。详细论证参见方案第4节。<br>
+<span class="highlight">光学约束：</span>①波长必须在定心球面镜和PF靶球膜系的高反射区内（≥85%）；②波长必须在可见光范围内以便肉眼观察装调；③人眼灵敏度尽可能高以提高装调效率；④激光器货架产品可获得。</td>
+<td>输出：635±5 nm</td><td>可并行</td><td>光学</td><td>0.5</td>
+</tr>
+<tr>
+<td>4.7</td><td>光学</td><td>确定激光器功率与稳定性（考虑大靶球效率）</td>
+<td>
+大靶球回光效率估算：入射光锥被靶球完全截获，球面反射率85%，反射光沿原路返回的效率较高（因球心在PF点，反射波前与入射波前共轭），实际回光效率约10%~20%。<br>
+链路总效率估算：PSM往返10% × 球面镜90% × 靶球15% × 光纤80% ≈ 1%。<br>
+相机灵敏度约10⁻¹¹ W，要求信噪比≥10，所需出纤功率≥10⁻⁸ W。<br>
+激光器≥5 mW远大于需求（安全裕度>10⁵），功率稳定性≤1% RMS。<br>
+<span class="highlight">光学约束：</span>①功率稳定性≤1% RMS以保证光斑质心提取精度（功率波动引起的质心抖动≤0.1像素）；②≥5 mW确保即使链路效率低于预期（如0.1%），相机仍有足够信噪比。</td>
+<td>输出：≥5 mW，≤1% RMS</td><td>依赖靶球尺寸</td><td>光学</td><td>0.5</td>
+</tr>
+<tr>
+<td>4.8</td><td>光学</td><td>激光器光谱/模式</td>
+<td>
+FWHM≤2 nm，单模（M²≤1.2）。<br>
+<span class="highlight">光学约束：</span>①窄光谱宽度（≤2 nm）减小PSM物镜色差引起的光斑弥散；②单模确保聚焦光斑接近衍射极限，提高共焦判别精度。</td>
+<td>输出</td><td>依赖NA</td><td>光学</td><td>0.5</td>
+</tr>
+<tr>
+<td>4.9</td><td>光学</td><td>PF成像光纤参数确定</td>
+<td>
+纤芯≤10 μm；NA必须≥PSM NA(0.25)，选用定制多模光纤NA=0.28±0.02。长度1.5 m，SMA905转C-Mount，损耗≤0.5 dB/m。<br>
+<span class="highlight">光学约束：</span>①纤芯≤10 μm远小于光斑尺寸（像面光斑直径约数十μm）以确保图像分辨力；②光纤NA≥PSM NA以保证照明光束全部耦合进入光纤。</td>
+<td>输出：光纤规格</td><td>依赖NA</td><td>光学</td><td>0.5</td>
+</tr>
+
+<tr><td>5</td><td colspan="7" style="font-weight:bold;background:#eee;">5. 离线标定（大靶球D-Δz曲线）</td></tr>
+<tr>
+<td>5.1</td><td>标定</td><td>建立大靶球的实际灵敏度曲线</td>
+<td>
+①在PSM和CL就位后，用已锁定IF点的PSM和已安装的CL，将靶球安装于高精度位移台（分辨率0.1 μm）。<br>
+②以设计d（IF→PF轴向距离=1886.927 mm）为中心，扫描Δz=±5 mm，步长50 μm，记录各位置光斑直径D。<br>
+③拟合D=f(Δz)，在d处求导得到实际灵敏度S_meas。若S_meas≥S_req（0.431），则NA=0.25满足需求。<br>
+④记录d对应的D_ref，作为阶段二在线判据。<br>
+<span class="highlight">光学约束：</span>①扫描范围±5 mm覆盖靶球初始安装偏差和CL/PF点位置偏差；②步长50 μm≤δz/3=53 μm以满足Nyquist采样；③位移台分辨率0.1 μm保证Δz测量精度。</td>
+<td>输入：d_design，位移台<br>输出：D-Δz曲线，D_ref</td><td>依赖PSM、CL、靶球到位</td><td>光学</td><td>2</td>
+</tr>
+
+<tr><td>6</td><td colspan="7" style="font-weight:bold;background:#eee;">6. 器件选型与采购</td></tr>
+<tr><td>6.1</td><td>选型</td><td>PSM供应商/定制</td><td>根据NA=0.25, WD=100 mm, M=0.1等规格书进行选型或定制。</td><td>PSM订单</td><td>依赖4.2,4.3</td><td>采购</td><td>5</td></tr>
+<tr><td>6.2</td><td>选型</td><td>定心球面镜加工</td><td>按R=80 mm, Ds=45 mm, 面形λ/10, 镀635 nm高反膜进行加工。</td><td>球面镜订单</td><td>依赖4.4,4.5</td><td>采购</td><td>3</td></tr>
+<tr><td>6.3</td><td>选型</td><td>PF靶球采购</td><td>按靶球规格书：直径12 mm（典型值），球度≤0.5 μm, Ra≤5 nm, 反射率≥85%@635 nm。</td><td>靶球订单</td><td>依赖4.6</td><td>采购</td><td>3</td></tr>
+<tr><td>6.4</td><td>选型</td><td>激光器采购</td><td>按规格书：635 nm, ≥5 mW, ≤1% RMS, FWHM≤2 nm, FC/PC耦合。</td><td>激光器订单</td><td>依赖4.6-4.8</td><td>采购</td><td>3</td></tr>
+<tr><td>6.5</td><td>选型</td><td>PF成像光纤采购</td><td>纤芯≤10 μm, NA=0.28, 长1.5 m, SMA905转C-Mount。</td><td>光纤订单</td><td>依赖4.9</td><td>采购</td><td>3</td></tr>
+<tr><td>6.6</td><td>选型</td><td>可见光相机采购</td><td>像素≤3.45 μm, ≥500万像素, 动态范围≥60 dB, C-Mount。</td><td>相机订单</td><td>依赖4.1</td><td>采购</td><td>2</td></tr>
+<tr><td>6.7</td><td>选型</td><td>精密位移台采购</td><td>行程≥±5 mm, 分辨率≤1 μm, 负载≥100 g, 带机械锁紧。</td><td>位移台订单</td><td>依赖3.2</td><td>采购</td><td>2</td></tr>
+
+<tr><td>7</td><td colspan="7" style="font-weight:bold;background:#eee;">7. 工装需求与设计</td></tr>
+<tr><td>7.1</td><td>需求</td><td>PSM固定工装</td><td>5自由度调节，适配PSM外形，与腔体外部基座连接。</td><td>任务书</td><td>依赖PSM外形</td><td>机械</td><td>1</td></tr>
+<tr><td>7.2</td><td>需求</td><td>定心球面镜转接工装</td><td>底部与CL相同的平行双V槽+销钉定位；上部安装球面镜(R80/D45)，微调机构±1 mm，因瓦合金。</td><td>任务书</td><td>依赖4.4,4.5</td><td>机械</td><td>2</td></tr>
+<tr><td>7.3</td><td>需求</td><td>PF靶球支架与安装杆</td><td>独立支架，刚性≥10 N/μm，连接位移台。安装杆与靶球焊接/螺纹连接，直线度≤2 μm。</td><td>任务书</td><td>依赖位移台尺寸</td><td>机械</td><td>1</td></tr>
+<tr><td>7.4</td><td>需求</td><td>向V槽负责方提资</td><td>平行双V槽+销钉重复定位精度≤±15 μm。</td><td>精度需求文件</td><td>来自1.1</td><td>系统</td><td>0.5</td></tr>
+
+<tr><td>8</td><td colspan="7" style="font-weight:bold;background:#eee;">8. 机械详细设计</td></tr>
+<tr><td>8.1</td><td>设计</td><td>PSM固定工装设计</td><td>三维建模，工程图，公差标注。</td><td>图纸</td><td>依赖7.1</td><td>机械</td><td>4</td></tr>
+<tr><td>8.2</td><td>设计</td><td>定心球面镜转接工装设计</td><td>微调锁死机构，公差分析确保球心位置≤±50 μm。</td><td>图纸</td><td>依赖7.2</td><td>机械</td><td>5</td></tr>
+<tr><td>8.3</td><td>设计</td><td>PF靶球支架设计</td><td>减振设计，适配位移台接口。</td><td>图纸</td><td>依赖7.3</td><td>机械</td><td>2</td></tr>
+<tr><td>8.4</td><td>评审</td><td>图纸评审冻结</td><td>会签。</td><td>签字版图纸</td><td>依赖8.1-8.3</td><td>项目组</td><td>1</td></tr>
+
+<tr><td>9</td><td colspan="7" style="font-weight:bold;background:#eee;">9. 采购下单</td></tr>
+<tr><td>9.1</td><td>采购</td><td>长周期物料下单</td><td>PSM、球面镜、靶球、激光器、光纤，第12天前。</td><td>订单</td><td>选型确认后</td><td>采购</td><td>2</td></tr>
+<tr><td>9.2</td><td>采购</td><td>标准件及工装合同</td><td>相机、位移台、工装外协，第18天前。</td><td>订单</td><td>图纸冻结后</td><td>采购</td><td>2</td></tr>
+</table>
+<p><span class="highlight">里程碑：</span>第18天全部采购下单；第38天工装加工完成；第45天物料齐套。</p>
+
+<!-- ===== 技术规格书部分 ===== -->
+<h1>技术规格书（版本①：±1 mm/±1 mrad）</h1>
+
+<h2>1. PSM（点光源显微仪）</h2>
+<table class="spec-table">
+<tr><th>参数</th><th>规格要求</th><th>确认方式/计算逻辑</th><th>含义说明</th><th>参数作用</th><th>验收标准</th></tr>
+<tr><td>物方NA</td><td>≥0.25</td><td>由灵敏度需求反推：S_min=0.431→NA_min≈0.216，加30%安全系数→0.28，受限于WD=100 mm，最终取0.25，离线标定验证</td><td>物方数值孔径，决定光锥发散角</td><td>决定离焦光斑直径变化率，影响轴向定位灵敏度</td><td>测角法或数值孔径计验证</td></tr>
+<tr><td>工作距离WD</td><td>≥100 mm</td><td>由R(80 mm)+d_safe(20 mm)导出，为PSM选型硬约束</td><td>物镜前端到IF点的距离</td><td>确保PSM与球面镜不干涉</td><td>用平面镜+位移台实测</td></tr>
+<tr><td>成像放大率M</td><td>≈0.1</td><td>由横向灵敏度需求：δxy=160 μm，像面需移动≥6.9 μm→M_min=0.043，取M=0.1</td><td>像面与物面尺寸比</td><td>决定物方位移在像面的反映</td><td>用标定靶实测</td></tr>
+<tr><td>焦距f</td><td>≈10 mm</td><td>f≈M×WD=0.1×100=10 mm</td><td>物镜焦距</td><td>与WD和M共同决定系统放大率</td><td>由WD和M推算验证</td></tr>
+<tr><td>调焦分辨率</td><td>≤1 μm</td><td>工程需求，满足共焦精细调节</td><td>最小调焦步长</td><td>保证轴向定位精度</td><td>位移台测量</td></tr>
+<tr><td>光斑质心精度</td><td>≤0.1像素</td><td>亚像素算法需求</td><td>质心定位的重复性</td><td>影响横向定位精度</td><td>连续采集100帧，标准差≤0.1像素</td></tr>
+<tr><td>照明接口</td><td>SMA905</td><td>与光纤NA匹配</td><td>光纤接口类型</td><td>保证光纤稳定连接</td><td>机械配合检查</td></tr>
+<tr><td>波像差RMS</td><td>≤λ/14</td><td>衍射极限需求（Marechal criterion）</td><td>物镜成像质量</td><td>保证光斑接近艾里斑</td><td>干涉仪检测</td></tr>
+</table>
+
+<h2>2. PSM调节机构（三维平移台+角位移台）</h2>
+<table class="spec-table">
+<tr><th>参数</th><th>规格要求</th><th>确认方式/计算逻辑</th><th>含义说明</th><th>参数作用</th><th>验收标准</th></tr>
+<tr><td>平移行程</td><td>≥±10 mm</td><td>覆盖机械偏差±5 mm并留余量</td><td>X/Y/Z移动范围</td><td>确保PSM能对准IF点</td><td>位移台读数验证</td></tr>
+<tr><td>角度行程</td><td>≥±5°</td><td>覆盖角度偏差±3°并留余量</td><td>俯仰/偏摆范围</td><td>调整PSM指向</td><td>角度测量验证</td></tr>
+<tr><td>平移分辨率</td><td>≤10 μm</td><td>优于PSM调焦分辨率1 μm的10倍</td><td>最小平移步长</td><td>精细调节共焦状态</td><td>电感测微仪</td></tr>
+<tr><td>角度分辨率</td><td>≤0.01°</td><td>保证IF点处横向偏移≤4 μm：arctan(4 μm/100 mm)≈0.0023°，取0.01°</td><td>最小角度步长</td><td>精细调节光斑位置</td><td>自准直仪</td></tr>
+<tr><td>锁紧平移漂移</td><td>≤2 μm/24h</td><td>远小于IF点标定误差20 μm</td><td>锁紧后位置变化</td><td>保证IF点基准稳定</td><td>长时间监测光斑质心</td></tr>
+<tr><td>锁紧角度漂移</td><td>≤0.002°/24h</td><td>保证IF点处横向偏移≤2 μm</td><td>锁紧后角度变化</td><td>保证PSM指向稳定</td><td>自准直仪监测</td></tr>
+</table>
+
+<h2>3. PF靶球精密三维位移台</h2>
+<table class="spec-table">
+<tr><th>参数</th><th>规格要求</th><th>确认方式/计算逻辑</th><th>含义说明</th><th>参数作用</th><th>验收标准</th></tr>
+<tr><td>行程</td><td>≥±5 mm</td><td>覆盖安装偏差±2 mm+调节范围±1 mm</td><td>X/Y/Z移动范围</td><td>确保靶球能到达PF点</td><td>位移台读数验证</td></tr>
+<tr><td>分辨率</td><td>≤1 μm</td><td>优于灵敏度160 μm的1/10</td><td>最小移动步长</td><td>精细定位靶球</td><td>电容传感器或激光干涉仪</td></tr>
+<tr><td>重复定位精度</td><td>≤0.5 μm</td><td>保证多次定位一致性</td><td>回到同一位置的能力</td><td>保证靶球定位可重复</td><td>多次移动并测量</td></tr>
+<tr><td>正交性</td><td>≤10″</td><td>减少轴间串扰</td><td>三轴垂直度偏差</td><td>保证调节独立性</td><td>光学角规或干涉仪</td></tr>
+<tr><td>负载</td><td>≥100 g</td><td>靶球+杆+连接件总质量约40 g的3倍</td><td>承载能力</td><td>确保位移台稳定工作</td><td>加载后测分辨率</td></tr>
+<tr><td>锁紧漂移</td><td>≤0.5 μm/24h</td><td>远小于定位误差预算800 μm</td><td>锁紧后位置变化</td><td>保证PF点标记稳定</td><td>长时间监测光斑</td></tr>
+</table>
+
+<h2>4. 定心球面镜</h2>
+<table class="spec-table">
+<tr><th>参数</th><th>规格要求</th><th>确认方式/计算逻辑</th><th>含义说明</th><th>参数作用</th><th>验收标准</th></tr>
+<tr><td>曲率半径R</td><td>80±0.08 mm</td><td>由IF点与接口位置几何决定：R=IF点到球面镜表面距离</td><td>球面镜球面半径</td><td>保证球心在IF点</td><td>干涉仪或球径仪</td></tr>
+<tr><td>口径Ds</td><td>45 mm</td><td>Ds≈2.2×R×NA=2.2×80×0.25=44 mm，取整</td><td>通光直径</td><td>截获全部光束</td><td>机械测量</td></tr>
+<tr><td>面形PV</td><td>≤λ/10</td><td>衍射极限需求</td><td>表面形状误差</td><td>保证反射波前质量</td><td>干涉仪检测</td></tr>
+<tr><td>镀膜反射率</td><td>≥90%@635 nm</td><td>与激光波长匹配</td><td>反射效率</td><td>保证回光强度</td><td>分光光度计</td></tr>
+</table>
+
+<h2>5. PF高反射靶球</h2>
+<table class="spec-table">
+<tr><th>参数</th><th>规格要求</th><th>确认方式/计算逻辑</th><th>含义说明</th><th>参数作用</th><th>验收标准</th></tr>
+<tr><td>直径</td><td>12±0.05 mm</td><td>已知前提条件</td><td>靶球大小</td><td>模拟锡滴尺寸</td><td>显微镜测量</td></tr>
+<tr><td>球度</td><td>≤0.5 μm</td><td>精密加工保证</td><td>球面形状偏差</td><td>保证反射特性</td><td>圆度仪</td></tr>
+<tr><td>粗糙度Ra</td><td>≤5 nm</td><td>光学抛光</td><td>表面微观起伏</td><td>减少散射</td><td>白光干涉仪</td></tr>
+<tr><td>反射率</td><td>≥85%@635 nm</td><td>镀膜保证</td><td>光能反射比例</td><td>保证回光信噪比</td><td>反射率计</td></tr>
+</table>
+
+<h2>6. 激光器</h2>
+<table class="spec-table">
+<tr><th>参数</th><th>规格要求</th><th>确认方式/计算逻辑</th><th>含义说明</th><th>参数作用</th><th>验收标准</th></tr>
+<tr><td>波长</td><td>635±5 nm</td><td>与膜系匹配；人眼灵敏度优于650/660 nm约2~3倍</td><td>激光颜色</td><td>高反射率区</td><td>光谱仪</td></tr>
+<tr><td>功率</td><td>≥5 mW</td><td>链路预算：总效率≈1%，需≥10⁻⁸ W到达相机</td><td>光纤输出功率</td><td>保证相机信噪比</td><td>光功率计</td></tr>
+<tr><td>稳定性</td><td>≤1% RMS</td><td>避免质心抖动超0.1像素</td><td>功率波动</td><td>保证质心定位精度</td><td>连续监测1h</td></tr>
+<tr><td>光谱宽度</td><td>≤2 nm</td><td>减小色差</td><td>波长纯度</td><td>保证光斑质量</td><td>光谱仪</td></tr>
+<tr><td>模式</td><td>单模</td><td>保证聚焦光斑接近衍射极限</td><td>光束质量</td><td>形成理想点光源</td><td>M²分析仪</td></tr>
+</table>
+
+<h2>7. PF成像光纤</h2>
+<table class="spec-table">
+<tr><th>参数</th><th>规格要求</th><th>确认方式/计算逻辑</th><th>含义说明</th><th>参数作用</th><th>验收标准</th></tr>
+<tr><td>纤芯直径</td><td>≤10 μm</td><td>远小于光斑尺寸</td><td>传像单元</td><td>保证图像分辨力</td><td>显微镜测量</td></tr>
+<tr><td>NA</td><td>0.28±0.02</td><td>必须≥PSM NA 0.25</td><td>数值孔径</td><td>确保照明充满入瞳</td><td>远场法测量</td></tr>
+<tr><td>长度</td><td>1.5 m</td><td>根据布局确定</td><td>光纤长度</td><td>连接PSM与相机</td><td>尺量</td></tr>
+<tr><td>接口</td><td>SMA905转C-Mount</td><td>与PSM和相机匹配</td><td>物理接口</td><td>稳定连接</td><td>机械配合</td></tr>
+</table>
+
+<h2>8. 可见光相机</h2>
+<table class="spec-table">
+<tr><th>参数</th><th>规格要求</th><th>确认方式/计算逻辑</th><th>含义说明</th><th>参数作用</th><th>验收标准</th></tr>
+<tr><td>像素尺寸</td><td>≤3.45 μm</td><td>保证像面灵敏度</td><td>单个像素大小</td><td>决定最小可辨位移</td><td>数据手册</td></tr>
+<tr><td>分辨率</td><td>≥500万像素</td><td>提供足够视场</td><td>总像素数</td><td>观察光斑形态</td><td>数据手册</td></tr>
+<tr><td>动态范围</td><td>≥60 dB</td><td>避免光斑饱和</td><td>灰度级范围</td><td>适应不同光强</td><td>实测</td></tr>
+<tr><td>接口</td><td>C-Mount</td><td>与光纤端匹配</td><td>镜头接口</td><td>物理连接</td><td>机械配合</td></tr>
+</table>
+
+<h2>9. 平行双V槽+销钉机构</h2>
+<table class="spec-table">
+<tr><th>参数</th><th>规格要求</th><th>确认方式/计算逻辑</th><th>含义说明</th><th>参数作用</th><th>验收标准</th></tr>
+<tr><td>V槽数量</td><td>2个，平行布置</td><td>设计要求</td><td>定位点数量</td><td>约束自由度</td><td>目视</td></tr>
+<tr><td>V槽平面度</td><td>≤0.002 mm</td><td>精密研磨</td><td>定位面平整度</td><td>保证接触精度</td><td>干涉仪或轮廓仪</td></tr>
+<tr><td>两V槽平行度</td><td>≤0.003 mm</td><td>精密加工</td><td>两槽相对倾斜</td><td>保证CL姿态正确</td><td>三坐标测量</td></tr>
+<tr><td>销钉配合</td><td>H7/g6</td><td>标准配合</td><td>销钉与孔间隙</td><td>约束旋转</td><td>塞规或气动量仪</td></tr>
+<tr><td>重复定位精度</td><td>≤±5 μm</td><td>误差预算导出</td><td>拆装后的位置变化</td><td>保证CL/PF位置一致</td><td>电感测微仪</td></tr>
+</table>
+
+<!-- ===== 前置条件表格 ===== -->
+<h1>附录：前置条件汇总表</h1>
+<p>以下表格完整汇总了本方案中涉及的所有前置条件（设计输入、已知参数、环境约束等），无论其在本版本中是否被修改或重复出现。</p>
+<table>
+<tr><th>序号</th><th>前置条件类别</th><th>前置条件内容</th><th>数值/规格</th><th>来源/依据</th><th>影响范围</th></tr>
+<tr><td>P1</td><td>光学设计</td><td>PF-IF轴向设计距离</td><td>1886.927 mm</td><td>腔体光学设计</td><td>靶球定位判据（D_ref法）、离线标定扫描范围</td></tr>
+<tr><td>P2</td><td>光学设计</td><td>收集镜（CL）焦距f_CL</td><td>200 mm（示例值）</td><td>CL光学设计</td><td>光锥直径计算、遮挡分析、角度偏差解算</td></tr>
+<tr><td>P3</td><td>光学设计</td><td>收集镜（CL）F/#</td><td>10（示例值）</td><td>CL光学设计</td><td>光锥直径计算</td></tr>
+<tr><td>P4</td><td>光学设计</td><td>CL多层膜工作波长</td><td>13.5 nm（EUV）</td><td>EUV光刻系统设计</td><td>说明可见光装调的必要性</td></tr>
+<tr><td>P5</td><td>光学设计</td><td>CL多层膜材料</td><td>Mo/Si多层膜</td><td>EUV反射镜标准设计</td><td>可见光波段反射率极低→需要635 nm可见光装调</td></tr>
+<tr><td>P6</td><td>机械设计</td><td>腔体V槽接口形式</td><td>平行双V槽+销钉</td><td>腔体机械设计</td><td>CL和转接工装的定位方式、自由度约束</td></tr>
+<tr><td>P7</td><td>机械设计</td><td>销钉孔配合等级</td><td>H7/g6</td><td>机械设计标准</td><td>Rz角度偏差、重复定位精度</td></tr>
+<tr><td>P8</td><td>机械设计</td><td>V槽平面度</td><td>≤0.002 mm</td><td>精密加工要求</td><td>重复定位精度e₁</td></tr>
+<tr><td>P9</td><td>机械设计</td><td>两V槽平行度</td><td>≤0.003 mm</td><td>精密加工要求</td><td>CL安装姿态</td></tr>
+<tr><td>P10</td><td>机械设计</td><td>V槽+销钉重复定位精度</td><td>≤±5 μm</td><td>误差预算导出</td><td>CL拆装一致性</td></tr>
+<tr><td>P11</td><td>机械设计</td><td>IF点空间坐标</td><td>由机械图纸获取</td><td>腔体光学-机械设计</td><td>R计算、WD_req计算、靶球扫描范围</td></tr>
+<tr><td>P12</td><td>机械设计</td><td>V槽接口基准面坐标</td><td>由机械图纸获取</td><td>腔体机械设计</td><td>转接工装设计、R计算</td></tr>
+<tr><td>P13</td><td>机械设计</td><td>安全间隙d_safe</td><td>≥20 mm</td><td>PSM物镜尺寸+操作空间需求</td><td>WD_req下限</td></tr>
+<tr><td>P14</td><td>靶球</td><td>PF靶球直径范围</td><td>10~15 mm（典型12 mm）</td><td>锡滴尺寸模拟需求</td><td>遮挡分析、球心定位原理、D_ref标定</td></tr>
+<tr><td>P15</td><td>靶球</td><td>靶球曲率半径R_ball</td><td>5~7.5 mm（对应Φ10~15 mm）</td><td>靶球直径/2</td><td>D-Δz非线性、最小光斑位置判据失效</td></tr>
+<tr><td>P16</td><td>靶球</td><td>靶球球度</td><td>≤0.5 μm</td><td>精密加工要求</td><td>自准直反射波前质量</td></tr>
+<tr><td>P17</td><td>靶球</td><td>靶球表面粗糙度Ra</td><td>≤5 nm</td><td>光学抛光</td><td>散射损耗、回光信噪比</td></tr>
+<tr><td>P18</td><td>靶球</td><td>靶球反射率@635 nm</td><td>≥85%</td><td>镀膜要求</td><td>链路预算中的回光效率</td></tr>
+<tr><td>P19</td><td>靶球</td><td>靶球安装杆直径</td><td>≥3 mm</td><td>结构刚度需求</td><td>位移台负载、安装杆设计</td></tr>
+<tr><td>P20</td><td>靶球</td><td>靶球+安装杆+连接件总质量</td><td>约40 g</td><td>估算值（Φ12 mm钢球~7 g）</td><td>位移台负载需求（≥100 g）</td></tr>
+<tr><td>P21</td><td>PSM系统</td><td>相机像素尺寸</td><td>≤3.45 μm</td><td>货架产品选型</td><td>成像放大率M的确定</td></tr>
+<tr><td>P22</td><td>PSM系统</td><td>像面可辨最小位移</td><td>≥2像素（6.9 μm）</td><td>Nyquist采样准则</td><td>M_min计算</td></tr>
+<tr><td>P23</td><td>PSM系统</td><td>PSM调焦分辨率</td><td>≤1 μm</td><td>工程需求</td><td>共焦调节精度、调节机构分辨率要求</td></tr>
+<tr><td>P24</td><td>PSM系统</td><td>PSM波像差要求</td><td>≤λ/14 RMS</td><td>Marechal criterion（衍射极限）</td><td>PSM选型/定制</td></tr>
+<tr><td>P25</td><td>环境</td><td>装调环境温度</td><td>22±0.5℃</td><td>精密光学装调标准</td><td>热漂移预算(e₅)、材料选择（因瓦合金）</td></tr>
+<tr><td>P26</td><td>环境</td><td>因瓦合金热膨胀系数</td><td>≤1.5×10⁻⁶/K</td><td>材料手册</td><td>工装热稳定性</td></tr>
+<tr><td>P27</td><td>环境</td><td>普通钢热膨胀系数</td><td>≈11.5×10⁻⁶/K</td><td>材料手册</td><td>环境漂移误差估算</td></tr>
+<tr><td>P28</td><td>精度要求</td><td>总允许位置误差</td><td>1000 μm（本版本）</td><td>锡滴打靶系统要求</td><td>误差预算分解、δ确定</td></tr>
+<tr><td>P29</td><td>精度要求</td><td>总允许姿态误差</td><td>1000 μrad（本版本）</td><td>锡滴打靶系统要求</td><td>角度偏差验证</td></tr>
+<tr><td>P30</td><td>精度要求</td><td>Nyquist安全因子</td><td>1/5</td><td>灵敏度裕度设计准则</td><td>δ=e₄/5</td></tr>
+<tr><td>P31</td><td>精度要求</td><td>离线标定采样步长</td><td>50 μm</td><td>≤δ/3=53 μm</td><td>D-Δz曲线精度</td></tr>
+<tr><td>P32</td><td>精度要求</td><td>位移台分辨率安全因子</td><td>1/10</td><td>精密定位工程准则</td><td>位移台分辨率≤灵敏度/10</td></tr>
+<tr><td>P33</td><td>激光器</td><td>激光器波长范围</td><td>635±5 nm</td><td>人眼灵敏度+膜系匹配+货架可获得性</td><td>膜系设计、肉眼观察、相机响应</td></tr>
+<tr><td>P34</td><td>激光器</td><td>635 nm人眼相对灵敏度</td><td>约为650 nm的2~3倍</td><td>CIE明视觉光谱光视效率函数V(λ)</td><td>装调操作效率</td></tr>
+<tr><td>P35</td><td>CL离线标定</td><td>CL的PF点标定精度</td><td>≤±2 μm</td><td>CMM或干涉仪离线测量</td><td>误差预算e₂</td></tr>
+<tr><td>P36</td><td>工装设计</td><td>转接工装关键尺寸公差</td><td>≤±0.005 mm</td><td>精密加工能力</td><td>球心-IF点偏差控制</td></tr>
+</table>
+
+</body>
+</html>
